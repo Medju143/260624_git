@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>長者健康運動網 | 天天做運動，健康伴你行</title>
+    
+    <!-- 使用 Tailwind CSS 作為快速排版與樣式框架 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 設置自定義顏色與字體大小 (符合長者需求：大字體、高對比、溫和大地色系) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2F6746',    // 深淺適中的溫和綠色 (高對比)
+                        primaryLight: '#4A8D65',
+                        earth: '#8B5A2B',      // 大地色 (溫暖平靜)
+                        bgLight: '#F4F7F5',    // 非常淡的綠灰色背景，不刺眼
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 基本字體設置：使用系統預設的清晰黑體 */
+        body {
+            font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+            background-color: #F4F7F5;
+            color: #1a202c; /* 高對比的深灰色字體 */
+            scroll-behavior: smooth;
+        }
+
+        /* 卡片懸停放大的互動效果 */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        /* 隱藏捲軸但保留滾動功能 (用於模態框) */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 頂部導航列 -->
+    <nav class="bg-white shadow-md p-4 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex items-center">
+            <!-- 簡單的葉子圖標代表大自然與健康 -->
+            <svg class="w-10 h-10 mr-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            <span class="text-3xl font-bold text-primary">長者健康運動網</span>
+        </div>
+    </nav>
+
+    <!-- 頂部 (Header/Hero) -->
+    <header class="relative w-full h-[80vh] flex items-center justify-center overflow-hidden">
+        <!-- 大自然風景相片 -->
+        <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&q=80&w=2000" alt="大自然風景" class="absolute inset-0 w-full h-full object-cover z-0">
+        <!-- 黑色半透明疊加層，確保文字清晰可見 -->
+        <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+        
+        <div class="relative z-20 text-center px-4 w-full">
+            <h1 class="text-white text-5xl md:text-7xl font-bold tracking-wider drop-shadow-2xl mb-8">
+                天天做運動，健康伴你行
+            </h1>
+        </div>
+
+        <!-- 向下的箭咀 (點擊可滾動到內容) -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce cursor-pointer p-4" onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'})">
+            <svg class="w-16 h-16 text-white drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- 中部 (Main Content) -->
+    <main id="main-content" class="max-w-7xl mx-auto px-4 py-16">
+        
+        <!-- 分類按鈕區 -->
+        <div class="flex flex-wrap justify-center gap-6 mb-16">
+            <button onclick="filterCategory('全部')" id="btn-全部" class="category-btn px-8 py-4 rounded-full text-3xl font-bold shadow-md transition border-2 border-transparent">全部</button>
+            <button onclick="filterCategory('太極')" id="btn-太極" class="category-btn px-8 py-4 rounded-full text-3xl font-bold shadow-md transition border-2 border-transparent">太極</button>
+            <button onclick="filterCategory('拉筋')" id="btn-拉筋" class="category-btn px-8 py-4 rounded-full text-3xl font-bold shadow-md transition border-2 border-transparent">拉筋</button>
+            <button onclick="filterCategory('跳舞')" id="btn-跳舞" class="category-btn px-8 py-4 rounded-full text-3xl font-bold shadow-md transition border-2 border-transparent">跳舞</button>
+        </div>
+
+        <!-- 卡片展示區 -->
+        <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- 這裡的內容會由 JavaScript 動態生成 -->
+        </div>
+
+    </main>
+
+    <!-- 底部 (Footer) -->
+    <footer class="bg-gray-800 text-gray-200 text-center py-10 mt-10">
+        <p class="text-2xl font-bold">2026 社區中心版權所有</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- 互動模態框 (隱藏，觸發時顯示) -->
+    <!-- ========================================== -->
+
+    <!-- YouTube 影片播放 Modal -->
+    <div id="video-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="w-full max-w-5xl flex justify-end mb-4">
+            <button onclick="closeVideo()" class="text-white text-6xl hover:text-gray-400 focus:outline-none">&times; 關閉</button>
+        </div>
+        <div class="w-full max-w-5xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
+            <iframe id="video-frame" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- 相片放大檢視 (Lightbox) Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex-col items-center justify-center p-4" onclick="closeLightbox()">
+        <button class="absolute top-8 right-12 text-white text-6xl hover:text-gray-400 focus:outline-none">&times; 關閉</button>
+        <img id="lightbox-img" src="" alt="放大相片" class="max-w-full max-h-[85vh] object-contain border-4 border-white rounded shadow-2xl">
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- JavaScript 邏輯與數據管理區 -->
+    <!-- ========================================== -->
+    <script>
+        // =========================================================================
+        // 【我可以修改資料的地方】
+        // 下方是網站的所有資料來源。
+        // 您可以隨時在這裡新增、修改或刪除卡片。
+        // 
+        // 欄位說明：
+        // - type: 資料類型，必須是 'video' (影片), 'photo' (相片), 或 'pdf' (文件)
+        // - category: 分類，例如 '太極', '拉筋', '跳舞'
+        // - title: 卡片的大標題
+        // - description: 卡片的說明文字
+        // - thumbnailUrl: 預覽圖片的網址
+        // - url: 點擊後要開啟的 YouTube 網址 / 放大相片網址 / PDF下載網址
+        // =========================================================================
+        
+        const siteData = [
+            {
+                id: 1,
+                type: 'video',
+                category: '太極',
+                title: '基礎太極拳十八式',
+                description: '適合初學者的基本太極動作，每天跟著做十分鐘，強身健體，保持關節靈活。',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1519834785169-98be25ec3f84?auto=format&fit=crop&q=80&w=800',
+                url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' // 請換成真實的 YouTube 嵌入網址 (embed URL)
+            },
+            {
+                id: 2,
+                type: 'pdf',
+                category: '拉筋',
+                title: '早晨溫和拉筋圖文教學',
+                description: '整理了8個適合長者的早晨拉筋動作。可以下載這份文件，印出來每天跟著做。',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&q=80&w=800',
+                url: '#' // 請換成真實的 PDF 檔案網址或路徑，例如 'files/morning-stretch.pdf'
+            },
+            {
+                id: 3,
+                type: 'photo',
+                category: '跳舞',
+                title: '上個月社區廣場舞活動',
+                description: '大家在週末一起開心跳舞的歡樂時光，點擊相片可以放大看清楚大家的笑容！',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?auto=format&fit=crop&q=80&w=800',
+                url: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?auto=format&fit=crop&q=80&w=1600'
+            },
+            {
+                id: 4,
+                type: 'video',
+                category: '跳舞',
+                title: '輕鬆健康排舞教學',
+                description: '跟著音樂節奏一起動起來，簡單易學的排舞，能有效促進心血管健康。',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&q=80&w=800',
+                url: 'https://www.youtube.com/embed/tgbNymZ7vqY'
+            },
+            {
+                id: 5,
+                type: 'photo',
+                category: '太極',
+                title: '秋季晨間太極班大合照',
+                description: '秋季班學員結業合照，大家都精神奕奕，歡迎新朋友隨時加入我們的行列。',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1522845015757-50bce044e5da?auto=format&fit=crop&q=80&w=800',
+                url: 'https://images.unsplash.com/photo-1522845015757-50bce044e5da?auto=format&fit=crop&q=80&w=1600'
+            },
+            {
+                id: 6,
+                type: 'video',
+                category: '拉筋',
+                title: '安全椅子伸展操',
+                description: '坐在椅子上也能輕鬆完成的伸展運動，特別適合保護膝蓋和腰部關節。',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=800',
+                url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+            }
+        ];
+
+        // =========================================================================
+        // 系統邏輯區 (除非需要修改功能，否則不建議改動)
+        // =========================================================================
+
+        // 渲染卡片功能
+        function renderCards(category) {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = ''; // 清空現有卡片
+
+            // 根據選擇過濾資料
+            const filteredData = category === '全部' 
+                ? siteData 
+                : siteData.filter(item => item.category === category);
+
+            // 生成 HTML
+            filteredData.forEach(item => {
+                let badgeHTML = '';
+                let actionButtonHTML = '';
+                let clickAction = '';
+
+                // 根據類型設定不同的標籤與按鈕 (核心功能與互動)
+                if (item.type === 'video') {
+                    badgeHTML = `<div class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-md text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                                    影片
+                                 </div>`;
+                    clickAction = `openVideo('${item.url}')`;
+                    actionButtonHTML = `<button onclick="${clickAction}" class="mt-4 w-full bg-primary text-white py-4 rounded-xl text-2xl font-bold hover:bg-primaryLight transition flex justify-center items-center">
+                                            播放影片
+                                        </button>`;
+                } else if (item.type === 'pdf') {
+                    badgeHTML = `<div class="absolute top-4 right-4 bg-earth text-white px-4 py-2 rounded-lg shadow-md text-xl font-bold">文件 PDF</div>`;
+                    // PDF 顯示「下載」按鈕
+                    actionButtonHTML = `<a href="${item.url}" download target="_blank" class="mt-4 block text-center w-full bg-earth text-white py-4 rounded-xl text-2xl font-bold hover:bg-opacity-90 transition">
+                                            下載文件
+                                        </a>`;
+                    clickAction = ``; // 點擊圖片無動作，依靠按鈕
+                } else if (item.type === 'photo') {
+                    badgeHTML = `<div class="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md text-xl font-bold">活動相片</div>`;
+                    clickAction = `openLightbox('${item.url}')`;
+                    actionButtonHTML = `<button onclick="${clickAction}" class="mt-4 w-full bg-blue-600 text-white py-4 rounded-xl text-2xl font-bold hover:bg-blue-500 transition">
+                                            放大檢視
+                                        </button>`;
+                }
+
+                // 組合單張卡片的 HTML
+                const cardHTML = `
+                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden card-hover border border-gray-200 flex flex-col">
+                        <div class="relative h-72 ${clickAction ? 'cursor-pointer' : ''}" onclick="${clickAction}">
+                            <img src="${item.thumbnailUrl}" alt="${item.title}" class="w-full h-full object-cover">
+                            ${badgeHTML}
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <div class="text-primary font-bold text-2xl mb-3">${item.category}</div>
+                            <h3 class="text-4xl font-bold text-gray-900 mb-4 leading-tight">${item.title}</h3>
+                            <p class="text-2xl text-gray-700 flex-grow leading-relaxed">${item.description}</p>
+                            <div class="pt-6">
+                                ${actionButtonHTML}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+
+            // 更新按鈕的視覺狀態 (顏色變化)
+            updateButtonStyles(category);
+        }
+
+        // 更新分類按鈕樣式
+        function updateButtonStyles(activeCategory) {
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => {
+                // 重置為未選中狀態 (灰底黑字)
+                btn.classList.remove('bg-primary', 'text-white', 'border-primaryLight');
+                btn.classList.add('bg-gray-200', 'text-gray-800');
+            });
+
+            // 設置選中狀態 (綠底白字)
+            const activeBtn = document.getElementById(`btn-${activeCategory}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-gray-200', 'text-gray-800');
+                activeBtn.classList.add('bg-primary', 'text-white', 'border-primaryLight');
+            }
+        }
+
+        // 切換分類
+        function filterCategory(category) {
+            renderCards(category);
+        }
+
+        // --- 互動功能：影片播放 Modal ---
+        function openVideo(url) {
+            const modal = document.getElementById('video-modal');
+            const frame = document.getElementById('video-frame');
+            frame.src = url; // 載入 YouTube 網址
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // 鎖定背景滾動
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('video-modal');
+            const frame = document.getElementById('video-frame');
+            frame.src = ''; // 清空網址，停止播放影片
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto'; // 恢復背景滾動
+        }
+
+        // --- 互動功能：相片放大 Lightbox ---
+        function openLightbox(url) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            img.src = url;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 頁面載入完成後，自動顯示「全部」資料
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCards('全部');
+        });
+
+    </script>
+</body>
+</html>
+
+```
